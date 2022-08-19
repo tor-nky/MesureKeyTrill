@@ -33,7 +33,7 @@ SetKeyDelay, -1, -1			; キーストローク間のディレイを変更
 #MenuMaskKey vk07			; Win または Alt の押下解除時のイベントを隠蔽するためのキーを変更する
 #UseHook					; ホットキーはすべてフックを使用する
 ;Process, Priority, , High	; プロセスの優先度を変更
-Thread, interrupt, 15, 18	; スレッド開始から15ミリ秒ないし18行以内の割り込みを、絶対禁止
+Thread, interrupt, 15, 17	; スレッド開始から15ミリ秒ないし17行以内の割り込みを、絶対禁止
 ;SetStoreCapslockMode, off	; Sendコマンド実行時にCapsLockの状態を自動的に変更しない
 
 ;SetFormat, Integer, H		; 数値演算の結果を、16進数の整数による文字列で表現する
@@ -404,11 +404,11 @@ Esc::
 			trillCount := - trillCount	; 正数に直す
 	}
 	; 繰り返しパターン 2周目以降 繰り返しが乱れたか
-	Else If (!trillError && pressedKeys[pressedKeys.Length() - trillCount] != nowKeyName)
+	Else If (!trillError && pressedKeys[pressedKeys.Length() - trillCount] != nowKeyName
+		&& pressedKeys.Length() <= passCount)
 	{
 		trillError := True
-		If (pressedKeys.Length() < passCount)
-			TrayTip, , 繰り返しが乱れました
+		TrayTip, , 繰り返しが乱れました
 	}
 
 	; 設定の個数に達した
