@@ -129,6 +129,12 @@ QPC() {		; () -> Double	ミリ秒単位
 ; ----------------------------------------------------------------------
 
 OutputTimer:
+	SetTimer, OutputTimer, Off
+	; 入力バッファが空なら後の処理はしない
+	If (!changedKeys.Length())
+		Return
+
+	; 出力
 	Output()
 	; 変数のリセット
 	firstPressTime :=
@@ -289,7 +295,7 @@ Output()	; () -> Double?
 
 	; 一塊の入力時間合計を出力
 	outputString .= "`n***** キー変化 " . pressKeyCount + repeatKeyCount + releaseKeyCount
-		. " 回で " . Round(keyTime - startTime, 1) . "ms。`n`t("
+		. " 回で " . Round(keyTime - startTime, 1) . " ms。`n`t("
 		. pressKeyCount . " 個押し + " . repeatKeyCount . " 個キーリピート + " . releaseKeyCount . " 個離す)`n"
 	If (multiPress > 1)
 		outputString .= "`t同時押し 最高 " . multiPress . " キー。`n"
