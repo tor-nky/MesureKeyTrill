@@ -94,13 +94,19 @@ Else
 ; 起動
 ; ----------------------------------------------------------------------
 
-	Run, Notepad.exe, , , pid	; メモ帳を起動
-	Sleep, 500
-	WinActivate, ahk_pid %pid%	; アクティブ化
 	If (A_IsCompiled)
 	{
 		; 実行ファイル化されたスクリプトの場合は終了
-		Send, 実行ファイル化されているので終了します。
+		MsgBox, , , 実行ファイル化されているので終了します。
+		ExitApp
+	}
+	Run, Notepad.exe	; メモ帳を起動
+	Sleep, 1000
+	WinGet, hwnd, ID, A
+	WinGet, process, ProcessName, ahk_id %hwnd%
+	If (process != "Notepad.exe")
+	{
+		MsgBox, , , メモ帳を開くのに失敗しました。`n再度、実行してください。
 		ExitApp
 	}
 	Clipboard := "単純トリル法による連接速度を計測します。Escキーを押すと終了します。`n`n"
@@ -169,7 +175,7 @@ SeparateLines()	; () -> String
 
 Output()	; () -> Double?
 {
-	global pid, changedKeys, changedTimes, scArray, passCount, trillError
+	global hwnd, changedKeys, changedTimes, scArray, passCount, trillError
 	static lastKeyTime := QPC()		; Double型
 ;	local keyName, postKeyName, lastPostKeyName, temp		; String型
 ;		, outputString										; String型
@@ -308,7 +314,7 @@ Output()	; () -> Double?
 	Clipboard := outputString
 
 	; 先ほど起動したメモ帳にのみ出力
-	IfWinActive, ahk_pid %pid%
+	IfWinActive, ahk_id %hwnd%
 		IfWinNotActive , ahk_class #32770
 			Send, ^v
 
@@ -390,7 +396,7 @@ Esc::
 	; キー変化なく1.05秒たったら表示
 	SetTimer, OutputTimer, -1050
 	; 先ほど起動したメモ帳のときだけ後の判定をする
-	IfWinNotActive, ahk_pid %pid%
+	IfWinNotActive, ahk_id %hwnd%
 		Return
 	; キーリピート検出
 	If (nowKeyName == lastKeyName)
